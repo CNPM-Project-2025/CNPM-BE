@@ -3,21 +3,20 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './module/user.module';
-import { AuthModule } from './auth/auth.module';
-import { CategoryModule } from './module/category.module';
-import { FoodModule } from './module/food.module';
-import { SupplierModule } from './module/supplier.module';
-import { PurchaseModule } from './module/purchase.module';
-import { PurchaseDetailModule } from './module/purchase_detail.module';
 import { dataSourceOption } from '../db/data-source';
 import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './auth/role.guard';
-import { AuthGuard } from './auth/auth-guard';
-import { User } from './entities/user.entity';
-import { QrCodeController } from './controller/qr_code/qr_code.controller';
-import { Bill } from './entities/bill.entity';
-import { BillModule } from './module/bill.module';
+import { AuthGuard } from './module/auth/auth-guard';
+import { AuthModule } from './module/auth/auth.module';
+import { RolesGuard } from './module/auth/role.guard';
+import { BillModule } from './module/bill/bill.module';
+import { CategoryModule } from './module/category/category.module';
+import { FoodModule } from './module/food/food.module';
+import { PurchaseModule } from './module/purchase/purchase.module';
+import { PurchaseDetailModule } from './module/purchase_detail/purchase_detail.module';
+import { QrCodeController } from './module/qr_code/qr_code.controller';
+import { SupplierModule } from './module/supplier/supplier.module';
+import { User } from './module/user/entities/user.entity';
+import { UserModule } from './module/user/user.module';
 
 @Module({
   imports: [
