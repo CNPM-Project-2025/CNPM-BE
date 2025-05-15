@@ -79,7 +79,10 @@ export class OrderService {
     createBillDto: CreateBillDto,
   ): Promise<any> {
     // Kiểm tra bàn
-    const table = await this.tableRepository.findOneBy({ id: createBillDto.tableId });
+    // if (!createBillDto.tableId) {
+    //   throw new BadRequestException('Table ID is required');
+    // }
+    const table = await this.tableRepository.findOneBy({ id: createBillDto.tableId?.id });
     if (!table) {
       throw new NotFoundException(`Table with ID ${createBillDto.tableId} not found`);
     }

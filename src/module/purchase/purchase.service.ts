@@ -98,15 +98,23 @@ export class PurchaseOrderService {
       });
 
       // Tạo PurchaseOrderDetails
-      const purchaseOrderDetails = details.map((detail) => {
-        var foodItem = foodItems.filter((x) => x.id === detail.foodItemId)[0];
-        const detailEntity = new PurchaseOrderDetail();
-        detailEntity.product = foodItem; // Sửa từ product thành foodItem
-        detailEntity.quantity = detail.quantity;
-        detailEntity.purchaseOrder = purchaseOrder;
-        detailEntity.price = detail.price; // Lưu giá tại thời điểm nhập
-        return detailEntity;
-      });
+      const purchaseOrderDetails = await Promise.all(
+        details.map(async (detail) => {
+          var foodItem = foodItems.filter((x) => x.id === detail.foodItemId)[0];
+          if (foodItem.import_price !== detail.price) {
+            await this.foodItemRepository.update(
+              { id: foodItem.id },
+              { import_price: detail.price },
+            );
+          }
+          const detailEntity = new PurchaseOrderDetail();
+          detailEntity.product = foodItem; // Sửa từ product thành foodItem
+          detailEntity.quantity = detail.quantity;
+          detailEntity.purchaseOrder = purchaseOrder;
+          detailEntity.price = detail.price; // Lưu giá tại thời điểm nhập
+          return detailEntity;
+        }),
+      );
 
       const result =
         await this.purchaseOrderDetailRepository.save(purchaseOrderDetails);
@@ -232,14 +240,19 @@ export class PurchaseOrderService {
     searchBy: string,
     minPrice: number,
     maxPrice: number,
+    status: PurchaseOrderStatus,
   ): Promise<any> {
     const whereConditions: any = {};
 
     // Thêm điều kiện tìm kiếm nếu có
-    if (search) {
+
+    if (search && searchBy) {
       whereConditions[searchBy] = Like(`%${search}%`);
     }
 
+    if (status) {
+      whereConditions.status = status;
+    }
     // Thêm điều kiện minPrice nếu có
     if (minPrice !== -1) {
       whereConditions.price = MoreThanOrEqual(minPrice);
@@ -251,7 +264,7 @@ export class PurchaseOrderService {
     }
 
     // Tìm tất cả các đơn hàng với các điều kiện đã thiết lập
-    return this.purchaseOrderRepository.find({
+    const [data, total] = await this.purchaseOrderRepository.findAndCount({
       relations: ['purchaseOrderDetails', 'purchaseOrderDetails.product', 'user'],
       select: {
         user: {
@@ -261,9 +274,12 @@ export class PurchaseOrderService {
           email: true,
         },  // Chọn chỉ các trường cần thiết từ bảng user
       },
+      order: { created_at: 'DESC' }, // Sắp xếp theo ngày tạo
       skip: (page - 1) * limit, // Xác định điểm bắt đầu dữ liệu
       take: limit, // Số lượng bản ghi trên mỗi trang
       where: whereConditions, // Điều kiện tìm kiếm
     });
+
+    return { data, total };
   }
 }

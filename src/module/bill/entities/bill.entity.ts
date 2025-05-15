@@ -3,6 +3,7 @@ import { OrderType } from 'src/constants/type_order';
 import { PaymentMethod } from 'src/constants/type_payment';
 import { OrderDetail } from 'src/module/order/entities/order_detail.entity';
 import { Table } from 'src/module/table/entities/table.entity';
+import { CardInfoDto } from 'src/module/bill/dto/create_bill_dto';
 
 import {
   Column,
@@ -57,6 +58,9 @@ export class Bill {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @Column({ type: 'json', nullable: true })
+  cardinfo: CardInfoDto | null;
 
   @ManyToOne(() => Table, (table) => table.bills, { nullable: true })
   @JoinColumn({ name: 'table_id' })

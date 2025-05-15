@@ -7,6 +7,8 @@ import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user-dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Roles } from './decorator/roles.decorator';
+import { stat } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +16,7 @@ export class AuthService {
     @InjectRepository(User) private userRepository: Repository<User>,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   async register(registerUserDto: RegisterUserDto): Promise<User> {
     const hashPassword = await this.hashPassword(registerUserDto.password);
@@ -42,7 +44,21 @@ export class AuthService {
     }
     //generate access token and refresh token
     const payload = { id: user.id, email: user.email };
-    return { ...await this.generateToken(payload), user};
+    return {
+      ...await this.generateToken(payload),
+      user: {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        phone: user.phone,
+        roles: user.roles,
+        avatar: user.avatar,
+        status: user.status,
+        created_at: user.created_at,
+        created_update: user.created_update,
+      },
+    };
   }
 
   async refreshToken(refresh_token: string): Promise<any> {
@@ -55,7 +71,23 @@ export class AuthService {
         refresh_token,
       });
       if (checkExistToken) {
-        return this.generateToken({ id: verify.id, email: verify.email });
+        const auth = await this.generateToken({ id: verify.id, email: verify.email });
+        return {
+          access_token: auth.access_token,
+          refresh_token: auth.refresh_token,
+          user: {
+            id: checkExistToken.id,
+            first_name: checkExistToken.first_name,
+            last_name: checkExistToken.last_name,
+            email: checkExistToken.email,
+            phone: checkExistToken.phone,
+            roles: checkExistToken.roles,
+            avatar: checkExistToken.avatar,
+            status: checkExistToken.status,
+            created_at: checkExistToken.created_at,
+            created_update: checkExistToken.created_update,
+          },
+        };
       } else {
         throw new HttpException(
           'Refresh token is not validdd',

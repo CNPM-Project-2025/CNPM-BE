@@ -6,6 +6,7 @@ import { CreateBillDto, UpdateBillDto } from '../bill/dto/create_bill_dto';
 import { OrderDetail } from '../order_detail/entities/order_detail.entity';
 import { FoodItem } from '../food/entities/fooditem.entity';
 import { min } from 'class-validator';
+import { Table } from '../table/entities/table.entity';
 
 @Injectable()
 export class BillService {
@@ -16,6 +17,8 @@ export class BillService {
     private orderdetailRepository: Repository<OrderDetail>,
     @InjectRepository(FoodItem)
     private foodItemRepository: Repository<FoodItem>,
+    @InjectRepository(Table)
+    private tableRepository: Repository<Table>,
   ) { }
 
   async getBillsWithPagination(page: number, limit: number, search: string, searchBy: string, min_price: number, max_price: number) {
@@ -51,7 +54,19 @@ export class BillService {
   }
 
   async createBill(createBillDto: CreateBillDto): Promise<Bill> {
+    console.log('createBillDto', createBillDto);
     const bill = this.billRepository.create(createBillDto);
+    // console.log('bill', bill);
+    const table = await this.tableRepository.findOneBy({
+      id: createBillDto.tableId?.id,
+    });
+    
+    if (!table) {
+      throw new Error(`Table with id ${createBillDto.tableId?.id} not found`);
+    }
+
+    bill.table = table; // Thiết lập mối quan hệ với bảng
+
     await this.billRepository.save(bill);
     // Lưu các chi tiết hóa đơn
     for (const orderDetail of createBillDto.orderDetails) {

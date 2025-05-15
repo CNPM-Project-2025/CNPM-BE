@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -17,13 +18,14 @@ import { DeleteResult, LessThanOrEqual, Like, MoreThanOrEqual, UpdateResult } fr
 import { Public } from 'src/module/auth/decorator/public.decorator';
 import { Roles } from 'src/module/auth/decorator/roles.decorator';
 import { UpdatePurchaseOrderDto } from './dto/update_purchase_order_dto';
+import { PurchaseOrderStatus } from 'src/constants/purchase_order_status';
 
 @Controller('purchase')
 export class PurchaseController {
-  constructor(private purchaseOrderService: PurchaseOrderService) {}
+  constructor(private purchaseOrderService: PurchaseOrderService) { }
 
   @Post()
-  @Public()
+  // @Public()
   create(
     @Req() req: any,
     @Body() createPurchaseOrderDto: CreatePurchaseOrderDto,
@@ -59,31 +61,34 @@ export class PurchaseController {
   @Public()
   async findAll(
     // @Req() req: any,
-    @Param('page') page: string,
-    @Param('limit') limit: string,
-    @Param('search') search: string,
-    @Param('search_by') searchBy: string,
-    @Param('min_price') minPrice: string,
-    @Param('max_price') maxPrice: string,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('search') search: string,
+    @Query('search_by') searchBy: string,
+    @Query('min_price') minPrice: number,
+    @Query('max_price') maxPrice: number,
+    @Query('status') status: PurchaseOrderStatus,
   ): Promise<any> {
-    const pageNumber = parseInt(page, 10) || 1;
-    const limitNumber = parseInt(limit, 10) || 10;  
+    console.log(page, limit, search, searchBy, minPrice, maxPrice, status);
+    const pageNumber = page || 1;
+    const limitNumber = limit || 10;
 
     // Gọi service để lấy dữ liệu
-    const data = await this.purchaseOrderService.findAll(
+    const { data, total } = await this.purchaseOrderService.findAll(
       pageNumber,
       limitNumber,
       search,
       searchBy,
-      minPrice ? parseFloat(minPrice) : -1,
-      maxPrice ? parseFloat(maxPrice) : -1,
+      minPrice ? (minPrice) : -1,
+      maxPrice ? (maxPrice) : -1,
+      status,
     );
     return {
       data: data,
-      total: data.length,
+      total: total,
       page: pageNumber,
       limit: limitNumber,
-      lastpage: Math.ceil(data.length / limitNumber),
-    }
+      lastpage: Math.ceil(total / limitNumber),
+    };
   }
 }
