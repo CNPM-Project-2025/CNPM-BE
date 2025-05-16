@@ -59,11 +59,11 @@ export class BillService {
     const bill = this.billRepository.create(createBillDto);
     // console.log('bill', bill);
     const table = await this.tableRepository.findOneBy({
-      id: createBillDto.tableId?.id,
+      id: createBillDto.tableId,
     });
     
     if (!table) {
-      throw new Error(`Table with id ${createBillDto.tableId?.id} not found`);
+      throw new Error(`Table with id ${createBillDto.tableId} not found`);
     }
 
     bill.table = table; // Thiết lập mối quan hệ với bảng

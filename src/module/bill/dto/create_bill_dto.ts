@@ -10,7 +10,7 @@ import { Type } from 'class-transformer';
 export class CreateBillDto {
 
   @IsOptional()
-  tableId?: Table;
+  tableId?: number;
 
   @IsOptional()
   @ValidateNested()
