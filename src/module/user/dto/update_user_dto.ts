@@ -4,4 +4,8 @@ export class UpdateUserDto {
   last_name: string;
 
   status: number;
+  
+  password: string;
+
+  phone: string;
 }
