@@ -42,6 +42,7 @@ export class TableController {
   }
 
   @Get(':id')
+  @Public()
   findById(@Param('id') id: string): Promise<any> {
     return this.tableService.findById(Number(id));
   }
