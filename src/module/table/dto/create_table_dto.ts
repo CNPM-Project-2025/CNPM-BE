@@ -1,3 +1,7 @@
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateTableDto {}
+export class CreateTableDto {
+
+    @IsString()
+    name: string;
+}

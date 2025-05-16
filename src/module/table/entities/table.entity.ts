@@ -15,6 +15,9 @@ export class Table {
 
   @Column({ nullable: true })
   qr_code: string;
+  
+  @Column({ nullable: true })
+  name: string;
 
   @CreateDateColumn()
   created_at: Date;

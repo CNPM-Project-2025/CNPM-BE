@@ -17,16 +17,19 @@ export class TableService {
 
   async create(createTableDto: CreateTableDto): Promise<Table> {
     console.log(CreateTableDto);
-    const newTable = await this.tableRepository.save(createTableDto);
+    // const newTable = await this.tableRepository.save(createTableDto);
 
     // Tạo URL QR code với id
-    const baseUrl = process.env.BASE_URL || 'http://localhost:9999';
-    const qrCodeUrl = `${baseUrl}/table/${newTable.id}/order`;
+    // const baseUrl = process.env.BASE_URL || 'http://localhost:9999';
+    // const qrCodeUrl = `${baseUrl}/table/${newTable.id}/order`;
 
-    const base64 = (await this.generateQRCode(newTable.id)).qrCodeBase64;
-
+    // const base64 = (await this.generateQRCode(newTable.id)).qrCodeBase64;
+    const newTable = await this.tableRepository.create({
+      ...createTableDto,
+      // qr_code: qrCodeUrl,
+    });
     // Cập nhật qr_code
-    newTable.qr_code = qrCodeUrl;
+    // newTable.qr_code = qrCodeUrl;
     return this.tableRepository.save(newTable);
   }
 
