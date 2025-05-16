@@ -42,6 +42,7 @@ export class BillService {
     // trả về hóa đơn và bao gồm cả chi tiết hóa đơn
     queryBuilder.leftJoinAndSelect('bill.orderDetails', 'orderDetail');
     queryBuilder.leftJoinAndSelect('orderDetail.foodItem', 'foodItem');
+    queryBuilder.leftJoinAndSelect('bill.table', 'table');
     // Sắp xếp theo id hóa đơn giảm dần
     queryBuilder.orderBy('bill.id', 'DESC');
     const [data, total] = await queryBuilder.getManyAndCount();
