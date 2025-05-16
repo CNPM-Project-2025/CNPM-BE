@@ -79,7 +79,7 @@ export class TableService {
     const searchBy = query.search_by || '';
     let whereCondition = {};
     if (keyword && searchBy) {
-      if (['status', 'capcity'].includes(searchBy)) {
+      if (['id', 'name'].includes(searchBy)) {
         whereCondition = { [searchBy]: Like(`%${keyword}%`) };
       } else {
         // Nếu search_by không hợp lệ, trả về lỗi hoặc tìm kiếm mặc định
@@ -95,7 +95,7 @@ export class TableService {
       order: { created_at: 'DESC' },
       take: items_per_page,
       skip: skip,
-      select: ['id', 'qr_code', 'created_at', 'updated_at'],
+      select: ['id', 'name', 'qr_code', 'created_at', 'updated_at'],
     });
     const lastPage = Math.ceil(total / items_per_page);
     const nextPage = page + 1 > lastPage ? null : page + 1;
