@@ -4,6 +4,7 @@ import { TableService } from '../table/table.service';
 import { BillService } from '../bill/bill.service';
 import { CreateBillDto, UpdateBillDto } from '../bill/dto/create_bill_dto';
 import { Public } from '../auth/decorator/public.decorator';
+import { Roles } from '../auth/decorator/roles.decorator';
 
 @Controller('bill')
 export class BillController {
@@ -49,6 +50,7 @@ export class BillController {
     }
 
     @Put(':id')
+    @Public()
     async updateBill(
       @Param('id') id: number,
       @Body() updateBillDto: UpdateBillDto,

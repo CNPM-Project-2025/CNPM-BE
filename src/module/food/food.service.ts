@@ -155,4 +155,32 @@ export class FoodService {
     }
     return await this.foodItemRepository.update(id, { image });
   }
+
+  async update(
+    id: number,
+    createFoodDto: CreateFoodDto,
+  ): Promise<UpdateResult> {
+    const foodItem = await this.foodItemRepository.findOneBy({ id });
+    if (!foodItem) {
+      throw new NotFoundException(`foodItem with ID ${id} not found`);
+    }
+   
+    const category = await this.categoryRepository.findOneBy({
+      id: createFoodDto.categoryId,
+    });
+    if (!category) {
+      throw new NotFoundException(
+        `Category with ID ${createFoodDto.categoryId} not found`,
+      );
+    }
+    foodItem.category = category; // Cập nhật mối quan hệ với category
+    foodItem.name = createFoodDto.name; // Cập nhật tên món ăn
+    foodItem.description = createFoodDto.description; // Cập nhật mô tả
+    foodItem.sell_price = createFoodDto.sell_price; // Cập nhật giá bán
+    foodItem.import_price = createFoodDto.import_price; // Cập nhật giá nhập
+    foodItem.status = createFoodDto.status; // Cập nhật trạng thái
+    // foodItem.stock = createFoodDto.stock; // Cập nhật số lượng tồn kho
+    foodItem.category = category; // Cập nhật mối quan hệ với danh mục
+    return await this.foodItemRepository.update(id, foodItem);
+  }
 }

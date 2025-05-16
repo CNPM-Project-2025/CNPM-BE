@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
   Req,
   SetMetadata,
@@ -81,6 +82,15 @@ export class FoodController {
   @Public()
   getFoodByID(@Param('id') id: string): Promise<any> {
     return this.foodService.findById(Number(id));
+  }
+
+  @Put(':id')
+  @Roles('Admin')
+  update(
+    @Param('id') id: string,
+    @Body() createFoodDto: CreateFoodDto,
+  ): Promise<UpdateResult> {
+    return this.foodService.update(Number(id), createFoodDto);
   }
 
   @Post(':foodID/upload-image-food')
