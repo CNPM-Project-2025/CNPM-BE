@@ -91,6 +91,22 @@ export class BillService {
     return bill;
   }
 
+  // update
+  async updateBill(id: number, updateBillDto: UpdateBillDto): Promise<Bill> {
+    const bill = await this.billRepository.findOneBy({ id });
+    if (!bill) {
+      throw new Error(`Bill with id ${id} not found`);
+    }
+
+    // Chỉ cập nhật trạng thái (status)
+    if (updateBillDto.status !== undefined) {
+      bill.status = updateBillDto.status;
+    }
+
+    await this.billRepository.save(bill);
+    return bill;
+  }
+
   async getBillById(id: number): Promise<Bill> {
     const bill = await this.billRepository.findOneBy({ id });
     if (!bill) {

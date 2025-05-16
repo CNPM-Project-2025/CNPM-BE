@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/
 import { OrderService } from '../order/order.service';
 import { TableService } from '../table/table.service';
 import { BillService } from '../bill/bill.service';
-import { CreateBillDto } from '../bill/dto/create_bill_dto';
+import { CreateBillDto, UpdateBillDto } from '../bill/dto/create_bill_dto';
 import { Public } from '../auth/decorator/public.decorator';
 
 @Controller('bill')
@@ -48,13 +48,13 @@ export class BillController {
         };
     }
 
-    // @Put(':id')
-    // async updateBill(
-    //   @Param('id') id: number,
-    //   @Body() updateBillDto: CreateBillDto,
-    // ) {
-    //   return await this.billService.updateBill(id, updateBillDto);
-    // }
+    @Put(':id')
+    async updateBill(
+      @Param('id') id: number,
+      @Body() updateBillDto: UpdateBillDto,
+    ) {
+      return await this.billService.updateBill(id, updateBillDto);
+    }
 
     // @Delete(':id')
     // async deleteBill(@Param('id') id: number) {
