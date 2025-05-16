@@ -110,8 +110,12 @@ export class TableService {
       lastPage,
     };
   }
-  findById(id: number): Promise<any> {
-    return this.tableRepository.findOneBy({ id });
+  async findById(id: number): Promise<any> {
+    const table = await this.tableRepository.findOneBy({ id });
+    if (!table) {
+      throw new NotFoundException(`Table with ID ${id} not found`);
+    }
+    return table;
   }
 
   async update(
