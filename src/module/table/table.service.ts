@@ -113,4 +113,11 @@ export class TableService {
   findById(id: number): Promise<any> {
     return this.tableRepository.findOneBy({ id });
   }
+
+  async update(
+    id: number,
+    updateTableDto: CreateTableDto,
+  ): Promise<UpdateResult> {
+    return this.tableRepository.update(id, updateTableDto);
+  }
 }

@@ -32,6 +32,15 @@ export class TableController {
     return this.tableService.findAll(query);
   }
 
+  @Put(':id')
+  @Roles('Admin')
+  update(
+    @Param('id') id: string,
+    @Body() updateTableDto: CreateTableDto,
+  ): Promise<UpdateResult> {
+    return this.tableService.update(Number(id), updateTableDto);
+  }
+
   @Get(':id')
   findById(@Param('id') id: string): Promise<any> {
     return this.tableService.findById(Number(id));
