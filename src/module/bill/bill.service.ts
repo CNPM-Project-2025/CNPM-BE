@@ -80,7 +80,12 @@ export class BillService {
         throw new Error(`FoodItem with id ${orderDetail.foodItemId} not found`);
       }
       orderDetailEntity.foodItem = foodItem;
+      foodItem.stock -= orderDetail.quantity; // Giảm số lượng tồn kho
+      if (foodItem.stock < 0) {
+        throw new Error(`Not enough stock for FoodItem with id ${orderDetail.foodItemId}`);
+      }
       await this.orderdetailRepository.save(orderDetailEntity);
+      await this.foodItemRepository.save(foodItem);
     }
 
     return bill;
