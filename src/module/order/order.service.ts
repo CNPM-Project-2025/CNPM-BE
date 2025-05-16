@@ -82,7 +82,7 @@ export class OrderService {
     // if (!createBillDto.tableId) {
     //   throw new BadRequestException('Table ID is required');
     // }
-    const table = await this.tableRepository.findOneBy({ id: createBillDto.tableId?.id });
+    const table = await this.tableRepository.findOneBy({ id: createBillDto.tableId });
     if (!table) {
       throw new NotFoundException(`Table with ID ${createBillDto.tableId} not found`);
     }
