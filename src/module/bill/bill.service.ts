@@ -63,6 +63,7 @@ export class BillService {
     });
     
     if (!table) {
+      this.billRepository.delete(bill.id); // Xóa hóa đơn nếu không tìm thấy bảng
       throw new Error(`Table with id ${createBillDto.tableId} not found`);
     }
 
@@ -77,11 +78,13 @@ export class BillService {
         id: orderDetail.foodItemId,
       });
       if (!foodItem) {
+        // this.billRepository.delete(bill.id); // Xóa hóa đơn nếu không tìm thấy món ăn
         throw new Error(`FoodItem with id ${orderDetail.foodItemId} not found`);
       }
       orderDetailEntity.foodItem = foodItem;
       foodItem.stock -= orderDetail.quantity; // Giảm số lượng tồn kho
       if (foodItem.stock < 0) {
+        // this.billRepository.delete(bill.id); // Xóa hóa đơn nếu không đủ hàng
         throw new Error(`Not enough stock for FoodItem with id ${orderDetail.foodItemId}`);
       }
       await this.orderdetailRepository.save(orderDetailEntity);
