@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import * as express from 'express';
 
 
 async function bootstrap() {
@@ -18,6 +19,15 @@ async function bootstrap() {
     // .addCors()
     .build(); // nest swagger
 
+  app.use('/payment/webhook', express.raw({ type: '*/*' }));
+  app.use((req, res, next) => {
+    if (req.originalUrl === '/payment/webhook') {
+      next(); // skip json parser for webhook
+    } else {
+      express.json()(req, res, next); // apply json parser
+    }
+  });
+
   app.useStaticAssets(join(__dirname, '..', '..', 'uploads/'), {
     prefix: '/uploads/',
   });
@@ -27,6 +37,8 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Các phương thức HTTP được phép
     credentials: true, // Chấp nhận cookies từ frontend
   });
+
+
 
   // Serve thư mục uploads
 
