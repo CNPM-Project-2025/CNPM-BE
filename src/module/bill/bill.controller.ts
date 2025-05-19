@@ -35,6 +35,7 @@ export class BillController {
     }
 
     @Get(':id')
+    @Public()
     async getBillById(@Param('id') id: number) {
         return {
             data: await this.billService.getBillById(id),
