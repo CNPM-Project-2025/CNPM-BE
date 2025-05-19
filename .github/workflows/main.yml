@@ -19,23 +19,23 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 160.250.134.253 >> ~/.ssh/known_hosts
 
+      - name: Create .env file from GitHub secret
+        run: |
+          echo "${{ secrets.ENV }}" > ENV
+
+      - name: Copy .env to VPS
+        run: |
+          scp -i ~/.ssh/id_rsa ENV root@160.250.134.253:/home/cnpm/CNPM-BE/ENV
+
       - name: Deploy and run Docker on VPS
         run: |
-          ssh -i ~/.ssh/id_rsa root@160.250.134.253 << 'EOF'
+          ssh -i ~/.ssh/id_rsa root@160.250.134.253 << EOF
             set -e
 
             cd /home/cnpm/CNPM-BE || exit 1
 
             echo "Pull latest code"
             git pull origin main
-
-            # Kiểm tra file ENV có tồn tại không, nếu không thì tạo từ secret
-            if [ ! -f ENV ]; then
-              echo "ENV file not found, creating from secret"
-              cat > ENV << 'EOL'
-							${{ secrets.ENV}}
-						EOL
-            fi
 
             echo "Build Docker image"
             docker build -t my-nest-backend .
