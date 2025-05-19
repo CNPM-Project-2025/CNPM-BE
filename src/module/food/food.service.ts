@@ -57,6 +57,7 @@ export class FoodService {
     const searchBy = query.search_by || '';
     const categoryId = Number(query.category) || '';
 
+
     // Khởi tạo query builder
     const queryBuilder = this.foodItemRepository
       .createQueryBuilder('foodItem')
@@ -80,6 +81,10 @@ export class FoodService {
     if (categoryId) {
       queryBuilder.andWhere('category.id = :categoryId', { categoryId });
     }
+
+    queryBuilder.andWhere('foodItem.status = :status', {
+      status: 1,
+    });
 
     // Lọc theo khoảng giá
     if (query.min_price !== undefined && query.max_price !== undefined) {
@@ -106,7 +111,9 @@ export class FoodService {
         max_price: query.max_price,
       });
     }
+    // 
 
+    
     console.log(queryBuilder);
     // Phân trang
     queryBuilder.skip(skip).take(items_per_page);
