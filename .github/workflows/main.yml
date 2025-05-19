@@ -1,0 +1,51 @@
+name: Deploy to VPS with Docker
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS }}" | base64 -d > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 160.250.134.253 >> ~/.ssh/known_hosts
+
+      - name: Create .env file from GitHub secret
+        run: |
+          echo "${{ secrets.ENV }}" > ENV
+
+      - name: Copy .env to VPS
+        run: |
+          scp -i ~/.ssh/id_rsa ENV root@160.250.134.253:/home/cnpm/CNPM-BE/ENV
+
+      - name: Deploy and run Docker on VPS
+        run: |
+          ssh -i ~/.ssh/id_rsa root@160.250.134.253 << EOF
+            set -e
+
+            cd /home/cnpm/CNPM-BE || exit 1
+
+            echo "Pull latest code"
+            git pull origin main
+
+            echo "Build Docker image"
+            docker build -t my-nest-backend .
+
+            echo "Stop and remove old container if exists"
+            docker stop nest-backend || true
+            docker rm nest-backend || true
+
+            echo "Run new container with ENV file, mapping port 9999 to 9999"
+            docker run -d --name nest-backend -p 9999:9999 --env-file ENV my-nest-backend
+
+            echo "Deployment completed"
+          EOF
