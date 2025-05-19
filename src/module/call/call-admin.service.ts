@@ -5,8 +5,8 @@ import { EventsGateway } from '../events/events.gateway';
 export class CallAdminService {
   constructor(private readonly eventsGateway: EventsGateway) {}
 
-  handleCall(data: { message: string }) {
+  handleCall(data: { tableId: number }) {
     this.eventsGateway.emitCustomerCall(data);
-    return { status: 'success', message: 'Yêu cầu gọi admin đã gửi' };
+    return { status: 'success', message: 'gọi nhân viên' };
   }
 }

@@ -8,7 +8,7 @@ export class CallAdminController {
 
   @Post()
   @Public()
-  callAdmin(@Body() body: { message: string }) {
+  callAdmin(@Body() body: { tableId: number }) {
     return this.callAdminService.handleCall(body);
   }
 }
