@@ -68,6 +68,27 @@ export class FoodController {
     return this.foodService.findAll(query);
   }
 
+  @Get('/all')
+  @Public()
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'items_per_page', required: false })
+  @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({
+    name: 'search_by',
+    required: false,
+    enum: ['name'],
+  }) // Chỉ định các trường hợp lệ
+  @ApiQuery({ name: 'category', required: false })
+  @ApiQuery({
+    name: 'min_price',
+    required: false,
+  })
+  @ApiQuery({ name: 'max_price', required: false })
+  findAllAdmin(@Query() query: FilterFoodDto): Promise<any> {
+    console.log(query);
+    return this.foodService.findAllAdmin(query);
+  }
+
   @Get('category/:categoryId')
   @Public()
   getbycategoryId(
