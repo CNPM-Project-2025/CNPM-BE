@@ -7,10 +7,12 @@ import { User } from '../user/entities/user.entity';
 import { FoodItem } from './entities/fooditem.entity';
 import { FoodController } from './food.controller';
 import { FoodService } from './food.service';
+import { EventsModule } from '../events/events.module'; 
+
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([FoodItem, Category, User]), ConfigModule],
+  imports: [TypeOrmModule.forFeature([FoodItem, Category, User]), ConfigModule, EventsModule,],
   controllers: [FoodController],
   providers: [FoodService, CategoryService],
 })

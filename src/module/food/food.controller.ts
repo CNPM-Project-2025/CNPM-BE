@@ -28,12 +28,16 @@ import { CreateFoodDto } from './dto/create_food_dto';
 import { FilterFoodDto } from './dto/filter_food_dto';
 import { FoodItem } from './entities/fooditem.entity';
 import { FoodService } from './food.service';
+import { EventsGateway } from '../events/events.gateway';
 
 
 @Controller('food')
 export class FoodController {
 
-  constructor(private foodService: FoodService) { }
+  constructor(
+    private foodService: FoodService,
+    private readonly eventsGateway: EventsGateway,
+  ) { }
 
   @Post()
   @Roles('Admin')
@@ -90,7 +94,14 @@ export class FoodController {
     @Param('id') id: string,
     @Body() createFoodDto: CreateFoodDto,
   ): Promise<UpdateResult> {
-    return this.foodService.update(Number(id), createFoodDto);
+    const result = this.foodService.update(Number(id), createFoodDto);
+    // Sau khi update xong → emit sự kiện đến WebSocket clients
+    this.eventsGateway.emitFoodUpdated({
+      id: Number(id),
+      ...createFoodDto,
+    });
+
+    return result;
   }
 
   @Post(':foodID/upload-image-food')
