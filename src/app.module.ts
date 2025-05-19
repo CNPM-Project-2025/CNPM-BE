@@ -19,6 +19,7 @@ import { QrCodeController } from "./module/qr_code/qr_code.controller";
 import { SupplierModule } from "./module/supplier/supplier.module";
 import { User } from "./module/user/entities/user.entity";
 import { UserModule } from "./module/user/user.module";
+import { CallAdminModule } from './module/call/call-admin.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UserModule } from "./module/user/user.module";
     PurchaseModule,
     PurchaseDetailModule,
     TypeOrmModule.forFeature([User]),
+    CallAdminModule,
   ],
   controllers: [
     AppController,

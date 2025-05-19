@@ -28,12 +28,16 @@ import { CreateFoodDto } from './dto/create_food_dto';
 import { FilterFoodDto } from './dto/filter_food_dto';
 import { FoodItem } from './entities/fooditem.entity';
 import { FoodService } from './food.service';
+import { EventsGateway } from '../events/events.gateway';
 
 
 @Controller('food')
 export class FoodController {
 
-  constructor(private foodService: FoodService) { }
+  constructor(
+    private foodService: FoodService,
+    private readonly eventsGateway: EventsGateway,
+  ) { }
 
   @Post()
   @Roles('Admin')
@@ -64,6 +68,27 @@ export class FoodController {
     return this.foodService.findAll(query);
   }
 
+  @Get('/all')
+  @Public()
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'items_per_page', required: false })
+  @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({
+    name: 'search_by',
+    required: false,
+    enum: ['name'],
+  }) // Chỉ định các trường hợp lệ
+  @ApiQuery({ name: 'category', required: false })
+  @ApiQuery({
+    name: 'min_price',
+    required: false,
+  })
+  @ApiQuery({ name: 'max_price', required: false })
+  findAllAdmin(@Query() query: FilterFoodDto): Promise<any> {
+    console.log(query);
+    return this.foodService.findAllAdmin(query);
+  }
+
   @Get('category/:categoryId')
   @Public()
   getbycategoryId(
@@ -90,7 +115,14 @@ export class FoodController {
     @Param('id') id: string,
     @Body() createFoodDto: CreateFoodDto,
   ): Promise<UpdateResult> {
-    return this.foodService.update(Number(id), createFoodDto);
+    const result = this.foodService.update(Number(id), createFoodDto);
+    // Sau khi update xong → emit sự kiện đến WebSocket clients
+    this.eventsGateway.emitFoodUpdated({
+      id: Number(id),
+      ...createFoodDto,
+    });
+
+    return result;
   }
 
   @Post(':foodID/upload-image-food')
