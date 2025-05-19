@@ -7,6 +7,6 @@ export class CallAdminService {
 
   handleCall(data: { tableId: number }) {
     this.eventsGateway.emitCustomerCall(data);
-    return { status: 'success', message: 'gọi nhân viên' };
+    return { status: 'success', message: 'gọi nhân viên' + data.tableId };
   }
 }
