@@ -22,7 +22,7 @@ jobs:
       - name: Deploy and run Docker on VPS
         run: |
           ssh -i ~/.ssh/id_rsa root@160.250.134.253 << 'EOF'
-            cd /root/app || exit 1
+            cd /home/cnpm/CNPM-BE || exit 1
 
             echo "Pull latest code"
             git pull origin main
