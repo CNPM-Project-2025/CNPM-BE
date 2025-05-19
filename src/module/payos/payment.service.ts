@@ -25,8 +25,8 @@ export class PaymentService {
       orderCode,
       amount,
       description: `Thanh toán đơn hàng #${orderCode}`,
-      returnUrl: 'http://localhost:5173/payment-success',
-      cancelUrl: 'http://localhost:5173/payment-cancel',
+      returnUrl: process.env.URL_SUCCESS ?? '',
+      cancelUrl: process.env.URL_FAILURE ?? '',
     });
   }
 

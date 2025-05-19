@@ -111,7 +111,11 @@ export class BillService {
   }
 
   async getBillById(id: number): Promise<Bill> {
-    const bill = await this.billRepository.findOneBy({ id });
+    
+    const bill = await this.billRepository.findOne({
+      where: { id },
+      relations: ['orderDetails', 'orderDetails.foodItem', 'table'],
+    });
     if (!bill) {
       throw new Error(`Bill with id ${id} not found`);
     }
@@ -119,7 +123,9 @@ export class BillService {
   }
 
   async getAllBills(): Promise<Bill[]> {
-    return await this.billRepository.find();
+    return await this.billRepository.find({
+      relations: ['orderDetails', 'orderDetails.foodItem', 'table'],
+    });
   }
 
   async deleteBill(id: number): Promise<void> {
