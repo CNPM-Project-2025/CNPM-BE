@@ -11,7 +11,7 @@ export class EventsGateway {
     this.server.emit('food_updated', food);
   }
 
-  emitCustomerCall(data: any) {
-    this.server.emit('customer_call', data);
+  emitCustomerCall(tableId: number) {
+    this.server.emit('customer_call', tableId);
   }
 }
