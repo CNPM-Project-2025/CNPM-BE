@@ -1,4 +1,4 @@
-name: Deploy to VPS
+name: Deploy to VPS with Docker
 
 on:
   push:
@@ -19,6 +19,23 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 160.250.134.253 >> ~/.ssh/known_hosts
 
-      - name: Deploy via SSH
+      - name: Deploy and run Docker on VPS
         run: |
-          ssh -i ~/.ssh/id_rsa root@160.250.134.253 "echo 'Kết nối thành công từ GitHub Actions!'"
+          ssh -i ~/.ssh/id_rsa root@160.250.134.253 << 'EOF'
+            cd /root/app || exit 1
+
+            echo "Pull latest code"
+            git pull origin main
+
+            echo "Build Docker image"
+            docker build -t my-nest-backend .
+
+            echo "Stop and remove old container if exists"
+            docker stop nest-backend || true
+            docker rm nest-backend || true
+
+            echo "Run new container with ENV file, mapping port 9999 to 9999"
+            docker run -d --name nest-backend -p 9999:9999 --env-file ENV my-nest-backend
+
+            echo "Deployment completed"
+          EOF
