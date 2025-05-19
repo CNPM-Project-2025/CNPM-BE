@@ -2,11 +2,11 @@ import { DataSourceOptions, DataSource } from 'typeorm';
 
 export const dataSourceOption: DataSourceOptions = {
   type: 'mysql',
-  host: '192.168.181.183',
-  port: 3306,
-  username: 'root',
-  password: 'Admin@123',
-  database: 'cnpm',
+  host:  process.env.BD_HOST!,
+  port: Number(process.env.BD_PORT) || 3306,
+  username: process.env.BD_USER!,
+  password: process.env.BD_PASSWORD!,
+  database: process.env.BD_NAME!,
   entities: ['dist/**/*.entity.js'],
   migrations: ['dist/db/migrations/*.js'],
   synchronize: false,
