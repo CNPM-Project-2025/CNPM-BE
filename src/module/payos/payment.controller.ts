@@ -49,29 +49,45 @@ export class PaymentController {
         @Res() res: Response,
         @Headers() headers: Record<string, any>
     ) {
-        const rawBody = (req as any).rawBody?.toString('utf8');
-        console.log('Raw body:', rawBody);
+        const rawBodyString = (req as any).rawBody?.toString('utf8');
+        console.log('Raw body:', rawBodyString);
         console.log('Headers:', headers);
-        const data = JSON.parse(rawBody);
+
+        let data;
+        try {
+            data = JSON.parse(rawBodyString);
+        } catch (e) {
+            return res.status(400).send('Invalid JSON');
+        }
+
         const signature = data?.signature;
-        const isValid = this.paymentService.verifyWebhookSignature(rawBody, signature);
+        if (!signature) {
+            return res.status(400).send('Missing signature');
+        }
+
+        // Tạo một bản sao object, xóa trường signature để tính chữ ký đúng
+        const dataToCheck = { ...data };
+        delete dataToCheck.signature;
+
+        // Chuyển lại sang JSON string để tính checksum
+        const bodyStringForCheck = JSON.stringify(dataToCheck);
+
+        const isValid = this.paymentService.verifyWebhookSignature(bodyStringForCheck, signature);
         console.log('Signature:', signature);
         console.log('Is valid:', isValid);
+
         if (!isValid) {
             return res.status(400).send('Invalid signature');
         }
 
-
-        const body = req.body;
-        console.log('Webhook data: ------------------------------------------------------------------------------------------------------------------------', body);
-        if (data.code === "00"){
+        if (data.code === "00") {
             const UpdateBillDto = {
                 status: BillStatus.PAID,
             };
-            this.billService.updateBill(data.orderCode, UpdateBillDto);
+            await this.billService.updateBill(data.data.orderCode, UpdateBillDto);
         }
-        // TODO: Cập nhật trạng thái đơn hàng ở DB nếu muốn
 
         res.status(200).send('OK');
     }
+
 }
