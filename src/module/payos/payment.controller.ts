@@ -48,9 +48,12 @@ export class PaymentController {
         @Res() res: Response,
         @Headers('x-payos-signature') signature: string
     ) {
-        const rawBody = (req as any).rawBody?.toString();
+        const rawBody = (req as any).rawBody?.toString('utf8');
+        console.log('Raw body:', rawBody);
 
         const isValid = this.paymentService.verifyWebhookSignature(rawBody, signature);
+        console.log('Signature:', signature);
+        console.log('Is valid:', isValid);
         if (!isValid) {
             return res.status(400).send('Invalid signature');
         }
