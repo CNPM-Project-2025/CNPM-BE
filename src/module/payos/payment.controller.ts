@@ -11,10 +11,14 @@ import {
 import { PaymentService } from './payment.service';
 import { Request, Response } from 'express';
 import { Public } from '../auth/decorator/public.decorator';
+import { BillService } from '../bill/bill.service';
 
 @Controller('payment')
 export class PaymentController {
-    constructor(private readonly paymentService: PaymentService) { }
+    constructor(
+        private readonly paymentService: PaymentService,
+        private readonly billService: BillService,
+    ) { }
 
     // API tạo thanh toán (Frontend gọi)
     @Post('create')
@@ -52,7 +56,8 @@ export class PaymentController {
         }
 
         const body = req.body;
-        console.log('Webhook data:', body);
+        console.log('Webhook data: ------------------------------------------------------------------------------------------------------------------------', body);
+
 
         // TODO: Cập nhật trạng thái đơn hàng ở DB nếu muốn
 

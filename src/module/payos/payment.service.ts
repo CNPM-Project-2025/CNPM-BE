@@ -15,9 +15,9 @@ export class PaymentService {
       process.env.PAYOS_API_KEY!,
       process.env.PAYOS_CHECKSUM_KEY!
     );
-    console.log('PayOS initialized with client ID:', process.env.PAYOS_CLIENT_ID);
-    console.log('PayOS initialized with API key:', process.env.PAYOS_API_KEY);
-    console.log('PayOS initialized with checksum key:', process.env.PAYOS_CHECKSUM_KEY);
+    // console.log('PayOS initialized with client ID:', process.env.PAYOS_CLIENT_ID);
+    // console.log('PayOS initialized with API key:', process.env.PAYOS_API_KEY);
+    // console.log('PayOS initialized with checksum key:', process.env.PAYOS_CHECKSUM_KEY);
   }
 
   async createPaymentLink(amount: number, orderCode: number) {
