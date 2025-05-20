@@ -4,7 +4,7 @@ import { PaymentController } from './payment.controller';
 import { BillService } from '../bill/bill.service';
 
 @Module({
-  providers: [PaymentService],
+  providers: [PaymentService, BillService],
   controllers: [PaymentController],
   exports: [PaymentService],
   // imports: [BillService],
