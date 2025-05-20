@@ -79,6 +79,7 @@ export class PaymentController {
         // if (!isValid) {
         //     return res.status(400).send('Invalid signature');
         // }
+        res.status(200).send('OK');
 
         if (data.code === "00") {
             const UpdateBillDto = {
@@ -87,7 +88,6 @@ export class PaymentController {
             await this.billService.updateBill(data.data.orderCode, UpdateBillDto);
         }
 
-        res.status(200).send('OK');
     }
 
 }
