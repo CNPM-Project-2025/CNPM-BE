@@ -14,7 +14,11 @@ async function bootstrap() {
 
 
   // Middleware giữ raw body cho webhook
-  app.use('/payment/webhook', express.raw({ type: '*/*' }));
+  app.use('/payment/webhook', express.raw({ type: '*/*' }), (req, res, next) => {
+    (req as any).rawBody = req.body;
+    console.log('Raw body:', (req as any).rawBody);
+    next();
+  });
 
   app.enableCors({
     origin: '*',
