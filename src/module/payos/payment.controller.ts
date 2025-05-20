@@ -12,6 +12,7 @@ import { PaymentService } from './payment.service';
 import { Request, Response } from 'express';
 import { Public } from '../auth/decorator/public.decorator';
 import { BillService } from '../bill/bill.service';
+import { BillStatus } from 'src/constants/bill_status';
 
 @Controller('payment')
 export class PaymentController {
@@ -50,7 +51,8 @@ export class PaymentController {
     ) {
         const rawBody = (req as any).rawBody?.toString('utf8');
         console.log('Raw body:', rawBody);
-
+        const data = JSON.parse(rawBody);
+        signature = data?.signature;
         const isValid = this.paymentService.verifyWebhookSignature(rawBody, signature);
         console.log('Signature:', signature);
         console.log('Is valid:', isValid);
@@ -58,10 +60,16 @@ export class PaymentController {
             return res.status(400).send('Invalid signature');
         }
 
+
+
         const body = req.body;
         console.log('Webhook data: ------------------------------------------------------------------------------------------------------------------------', body);
-
-
+        if (data.code === "00"){
+            const UpdateBillDto = {
+                status: BillStatus.PAID,
+            };
+            this.billService.updateBill(data.orderCode, UpdateBillDto);
+        }
         // TODO: Cập nhật trạng thái đơn hàng ở DB nếu muốn
 
         res.status(200).send('OK');
