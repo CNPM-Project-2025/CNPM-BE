@@ -16,6 +16,7 @@ async function bootstrap() {
   // Middleware giữ raw body cho webhook
   app.use('/payment/webhook', express.raw({ type: '*/*' }), (req, res, next) => {
     (req as any).rawBody = req.body;
+    console.log('req:', req);
     console.log('Raw body:', (req as any).rawBody);
     next();
   });
