@@ -70,9 +70,9 @@ export class PaymentController {
         delete dataToCheck.signature;
 
         // Chuyển lại sang JSON string để tính checksum
-        const bodyStringForCheck = JSON.stringify(dataToCheck);
+        // const bodyStringForCheck = JSON.stringify(dataToCheck);
 
-        const isValid = this.paymentService.verifyWebhookSignature(bodyStringForCheck, signature);
+        const isValid = this.paymentService.verifyWebhookSignature(rawBodyString, signature);
         console.log('Signature:', signature);
         console.log('Is valid:', isValid);
 
