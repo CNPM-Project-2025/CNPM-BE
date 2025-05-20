@@ -5,20 +5,26 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { Request, Response } from 'express';
 import * as express from 'express';
+import { NextFunction } from 'connect';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   });
 
-  app.use('/payment/webhook', express.raw({ type: '*/*' }));
 
-  app.use((req, res, next) => {
+  app.use('/payment/webhook', express.raw({ type: '*/*' }), (req: { body: any; }, res: any, next: () => void) => {
+    (req as any).rawBody = req.body;  // gán buffer thô cho rawBody
+    console.log('rawBody', (req as any).rawBody);
+    next();
+  });
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.originalUrl === '/payment/webhook') {
       return next(); // skip json parser for webhook
     }
     express.json()(req, res, next);
-  });
+  }); 
 
   app.enableCors({
     origin: '*',
