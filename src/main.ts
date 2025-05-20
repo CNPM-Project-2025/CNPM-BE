@@ -3,48 +3,45 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { Request, Response } from 'express';
 import * as express from 'express';
-
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   });
-  const config = new DocumentBuilder()
-    .setTitle('Blog APIs')
-    .setDescription('List APIs for simple Blog by NXB Dev')
-    .setVersion('1.0')
-    .addTag('Users')
-    .addBearerAuth()
-    // .addCors()
-    .build(); // nest swagger
 
   app.use('/payment/webhook', express.raw({ type: '*/*' }));
+
   app.use((req, res, next) => {
     if (req.originalUrl === '/payment/webhook') {
-      next(); // skip json parser for webhook
-    } else {
-      express.json()(req, res, next); // apply json parser
+      return next(); // skip json parser for webhook
     }
+    express.json()(req, res, next);
+  });
+
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
   });
 
   app.useStaticAssets(join(__dirname, '..', '..', 'uploads/'), {
     prefix: '/uploads/',
   });
 
-  app.enableCors({
-    origin: '*', // Chỉ cho phép frontend từ localhost:5173
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Các phương thức HTTP được phép
-    credentials: true, // Chấp nhận cookies từ frontend
-  });
+  const config = new DocumentBuilder()
+    .setTitle('Blog APIs')
+    .setDescription('List APIs for simple Blog by NXB Dev')
+    .setVersion('1.0')
+    .addTag('Users')
+    .addBearerAuth()
+    .build();
 
-
-
-  // Serve thư mục uploads
-
-  console.log('Serving static files from:', join(__dirname, '..', 'uploads'));
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  console.log('Serving static files from:', join(__dirname, '..', '..', 'uploads'));
   await app.listen(process.env.PORT ?? 9999);
 }
 bootstrap();
