@@ -47,19 +47,19 @@ export class PaymentController {
     async handleWebhook(
         @Req() req: Request,
         @Res() res: Response,
-        @Headers('x-payos-signature') signature: string
+        @Headers() headers: Record<string, any>
     ) {
         const rawBody = (req as any).rawBody?.toString('utf8');
         console.log('Raw body:', rawBody);
+        console.log('Headers:', headers);
         const data = JSON.parse(rawBody);
-        signature = data?.signature;
+        const signature = data?.signature;
         const isValid = this.paymentService.verifyWebhookSignature(rawBody, signature);
         console.log('Signature:', signature);
         console.log('Is valid:', isValid);
         if (!isValid) {
             return res.status(400).send('Invalid signature');
         }
-
 
 
         const body = req.body;
