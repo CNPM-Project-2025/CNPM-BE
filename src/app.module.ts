@@ -20,6 +20,7 @@ import { SupplierModule } from "./module/supplier/supplier.module";
 import { User } from "./module/user/entities/user.entity";
 import { UserModule } from "./module/user/user.module";
 import { CallAdminModule } from './module/call/call-admin.module';
+import { PaymentModule } from "./module/payos/payment.module";
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CallAdminModule } from './module/call/call-admin.module';
     AuthModule,
     CategoryModule,
     FoodModule,
+    PaymentModule,
     BillModule,
     SupplierModule,
     PurchaseModule,
