@@ -13,18 +13,8 @@ async function bootstrap() {
   });
 
 
-  app.use('/payment/webhook', express.raw({ type: '*/*' }), (req: { body: any; }, res: any, next: () => void) => {
-    (req as any).rawBody = req.body;  // gán buffer thô cho rawBody
-    console.log('rawBody', (req as any).rawBody);
-    next();
-  });
-
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    if (req.originalUrl === '/payment/webhook') {
-      return next(); // skip json parser for webhook
-    }
-    express.json()(req, res, next);
-  }); 
+  // Middleware giữ raw body cho webhook
+  app.use('/payment/webhook', express.raw({ type: '*/*' }));
 
   app.enableCors({
     origin: '*',
