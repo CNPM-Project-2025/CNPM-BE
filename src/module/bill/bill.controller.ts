@@ -5,6 +5,7 @@ import { BillService } from '../bill/bill.service';
 import { CreateBillDto, UpdateBillDto } from '../bill/dto/create_bill_dto';
 import { Public } from '../auth/decorator/public.decorator';
 import { Roles } from '../auth/decorator/roles.decorator';
+import { OrderStatus } from 'src/constants/order_status';
 
 @Controller('bill')
 export class BillController {
@@ -57,6 +58,16 @@ export class BillController {
       @Body() updateBillDto: UpdateBillDto,
     ) {
       return await this.billService.updateBill(id, updateBillDto);
+    }
+
+    @Get("/cook")
+    async getBillCook() {
+        return await this.billService.getbillbystatus();
+    }
+
+    @Post('/updateOrderStatus')
+    async updateOrderStatus(@Body() data: { id: number; status: OrderStatus }) {
+        return await this.billService.UpdateStatusOrderdetail(data.id, data.status);
     }
 
     // @Delete(':id')

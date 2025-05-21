@@ -7,6 +7,8 @@ import { OrderDetail } from '../order_detail/entities/order_detail.entity';
 import { FoodItem } from '../food/entities/fooditem.entity';
 import { min } from 'class-validator';
 import { Table } from '../table/entities/table.entity';
+import { BillStatus } from 'src/constants/bill_status';
+import { OrderStatus } from 'src/constants/order_status';
 
 @Injectable()
 export class BillService {
@@ -126,6 +128,25 @@ export class BillService {
     return await this.billRepository.find({
       relations: ['orderDetails', 'orderDetails.foodItem', 'table'],
     });
+  }
+
+  async getbillbystatus(): Promise<Bill[]> {
+    const status = BillStatus.PAID;
+    return await this.billRepository.find({
+      where: { status },
+      // ẩn các chi tiết hóa đơn đã hoàn thành 
+      relations: ['orderDetails', 'orderDetails.foodItem', 'table'],
+    });
+  }
+
+  async UpdateStatusOrderdetail(id: number, status: OrderStatus): Promise<OrderDetail> {
+    const orderDetail = await this.orderdetailRepository.findOneBy({ id });
+    if (!orderDetail) {
+      throw new Error(`OrderDetail with id ${id} not found`);
+    }
+    orderDetail.status = status;
+    await this.orderdetailRepository.save(orderDetail);
+    return orderDetail;
   }
 
   async deleteBill(id: number): Promise<void> {
