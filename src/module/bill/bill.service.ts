@@ -29,7 +29,7 @@ export class BillService {
     // Thêm điều kiện tìm kiếm theo trường cụ thể nếu có
     if (search && searchBy) {
       if (searchBy === 'id') {
-        queryBuilder.andWhere('bill.id LIKE :search', { search: `%${ Number(search) }%` });
+        queryBuilder.andWhere('bill.id LIKE :search', { search: `%${Number(search)}%` });
         console.log('searchBy id');
       } else if (searchBy === 'paymentMethod') {
         queryBuilder.andWhere('bill.paymentMethod LIKE :search', { search: `%${search}%` });
@@ -63,7 +63,7 @@ export class BillService {
     const table = await this.tableRepository.findOneBy({
       id: createBillDto.tableId,
     });
-    
+
     if (!table) {
       this.billRepository.delete(bill.id); // Xóa hóa đơn nếu không tìm thấy bảng
       throw new Error(`Table with id ${createBillDto.tableId} not found`);
@@ -113,7 +113,7 @@ export class BillService {
   }
 
   async getBillById(id: number): Promise<Bill> {
-    
+
     const bill = await this.billRepository.findOne({
       where: { id },
       relations: ['orderDetails', 'orderDetails.foodItem', 'table'],
@@ -132,12 +132,19 @@ export class BillService {
 
   async getbillbystatus(): Promise<Bill[]> {
     const status = BillStatus.PAID;
-    return await this.billRepository.find({
+    const allBills = await this.billRepository.find({
       where: { status },
-      // ẩn các chi tiết hóa đơn đã hoàn thành 
       relations: ['orderDetails', 'orderDetails.foodItem', 'table'],
     });
+
+    // Trả về chỉ những hóa đơn có ít nhất 1 món chưa hoàn thành
+    const filteredBills = allBills.filter(bill =>
+      bill.orderDetails.some(detail => detail.status !== 'COMPLETED')
+    );
+
+    return filteredBills;
   }
+
 
   async UpdateStatusOrderdetail(id: number, status: OrderStatus): Promise<OrderDetail> {
     const orderDetail = await this.orderdetailRepository.findOneBy({ id });
