@@ -60,7 +60,7 @@ export class BillController {
       return await this.billService.updateBill(id, updateBillDto);
     }
 
-    @Get("/cook")
+    @Get("cook/paid")
     async getBillCook() {
         return await this.billService.getbillbystatus();
     }
